@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="page.css">
+    <title>Your Page Title</title>
+</head>
+<body>
+    <section class="top-nav">
+        <div>
+            <img id="logo"src="logo.png" alt="Logo">
+        </div>
+        <input id="menu-toggle" type="checkbox" />
+        <label class='menu-button-container' for="menu-toggle">
+        <div class='menu-button'></div>
+      </label>
+        <ul class="menu">
+          <li>Current Status</li>
+          <li>My Jobs</li>
+          <li>Information</li>
+          <!-- <li>Four</li>
+          <li>Five</li> -->
+        </ul>
+      </section>
+      <div id="currentStatus">
+        <h1 id="welcome">Welcome <u id="welcomeName"></u></h1>
+      </div>
+</body>
+    <!-- js scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+    <script src="page.js"></script>
+</html>
