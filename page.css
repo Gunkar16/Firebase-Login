@@ -1,8 +1,4 @@
 @import url(https://fonts.googleapis.com/css?family=Raleway);
-h2 {
-  vertical-align: center;
-  text-align: center;
-}
 
 html, body {
   margin: 0;
@@ -10,8 +6,8 @@ html, body {
 }
 
 * {
-    margin: 0px;
-    padding:0px;
+  margin: 0;
+  padding: 0;
   font-family: "Raleway";
   box-sizing: border-box;
 }
@@ -22,14 +18,10 @@ html, body {
   align-items: center;
   justify-content: space-between;
   background-color: white;
-  /* background-color: #00BAF0; */
-  /* background-color: #15C39A; */
-  /* background: linear-gradient(90deg, hsla(145, 84%, 73%, 1) 0%, hsla(150, 61%, 48%, 1) 100%); */
   border-bottom: #7FBD40 5px solid;
   color: black;
   height: 90px;
   padding: 1em;
-
 }
 
 .menu {
@@ -51,9 +43,10 @@ html, body {
   font-family: "Montserrat", sans-serif;
   font-size: 1rem;
 }
-.menu >li:hover{
-    background-color: #7FBD40;
-    color: white;
+
+.menu > li:hover {
+  background-color: #7FBD40;
+  color: white;
 }
 
 .menu-button-container {
@@ -81,7 +74,6 @@ html, body {
   transition: transform 400ms cubic-bezier(0.23, 1, 0.32, 1);
   border-radius: 2px;
   background-color: #7FBD40;
-
 }
 
 .menu-button::before {
@@ -107,7 +99,9 @@ html, body {
   margin-top: 0px;
   transform: rotate(-405deg);
 }
-
+#currentStatus h1{
+  margin-top: 10px;
+}
 @media (max-width: 850px) {
   .menu-button-container {
     display: flex;
@@ -149,20 +143,132 @@ html, body {
     border-bottom: 1px solid #444;
   }
 }
-@media (max-width: 400px){
-    #logo{
-    width:200px !important;
-}}
-#logo{
-    margin-left: 10px;
-    width:280px;
+
+@media (max-width: 400px) {
+  #logo {
+    width: 200px !important;
+  }
 }
-#currentStatus{
-    display: flex;
-    justify-content: center;
-    margin-top: 50px;
-    font-size: 30px;
+
+#logo {
+  margin-left: 10px;
+  width: 280px;
 }
-#welcomeName{
-    color: #7FBD40;
+
+#currentStatus {
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+  font-size: 30px;
+  flex-direction: column;
+  align-items: center;
+}
+
+#welcomeName {
+  color: #7FBD40;
+}
+
+.job-details {
+  background-color: #f2f2f2;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+#myJobs p {
+  margin: 10px 0;
+}
+
+#myJobs button {
+  margin: 5px;
+  padding: 10px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #7FBD40;
+  color: white;
+  font-size: 16px;
+}
+
+#myJobs button:hover {
+  background-color: #5a8f32;
+}
+#Status{
+  text-align: center;
+}
+#end{
+  background-color:#7FBD40;
+  width:150px;
+  height:150px;
+  color: white;
+  font-size:30px;
+  border-radius: 50%;
+  margin-top: 20px;
+}
+#noJob{
+  font-size: 80px;
+}
+#myJobs{
+  text-align: center;
+}
+/* ... (existing code) ... */
+
+#informationSection {
+  flex-direction: column;
+  /* justify-content: center; */
+  align-items: center;
+  margin: 30px;
+  font-size: 20px;
+}
+
+#userInfo {
+  background-color: #f2f2f2;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 10px;
+  width:60%;
+}
+
+#userInfo p {
+  margin: 10px 0px;
+  font-size: 20px;
+}
+
+/* ... (existing code) ... */
+#checkContainer{
+  display: flex;
+}
+#checkContainer p{
+  margin-right: 10px;
+  margin-top: 0;
+}
+#confirmPasswordButton{
+  color: white;
+  background-color: #7FBD40;
+  /* margin: 5px; */
+  padding: 10px;
+  cursor: pointer;
+  /* width:200px; */
+  border-radius: 30px;
+
+}
+#confirmPasswordButton:hover {
+  background-color: #5a8f32;
+}
+@media (max-width: 600px) {
+  #userInfo{
+    width:90%;
+  }
+  #informationSection h1{
+    font-size: 25px;
+  }
+  #currentStatus h1{
+    font-size: 35px;
+  }
+  #currentStatus button{
+    width:125px;
+    height:125px; 
+    font-size: 25px;
+  }
 }
