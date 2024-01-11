@@ -167,6 +167,9 @@ html, body {
 #welcomeName {
   color: #7FBD40;
 }
+#welcome{
+  text-align: center;
+}
 
 .job-details {
   background-color: #f2f2f2;

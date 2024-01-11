@@ -32,9 +32,8 @@ function acceptJob(userKey) {
     // Notify the user that the job has been accepted
     alert('Job accepted successfully.');
 
-    // Refresh the My Jobs section
-    showMyJobs();
-    updateCurrentStatus();
+    location.reload();
+
 }
 
 // Function to handle declining a job
@@ -49,9 +48,8 @@ function declineJob(userKey) {
     // Notify the user that the job has been declined
     alert('Job declined successfully.');
 
-    // Refresh the My Jobs section
-    showMyJobs();
-    updateCurrentStatus();
+    location.reload();
+
 }
 
 // Function to handle ending a job
@@ -103,6 +101,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         // Display job details
                         jobDiv.innerHTML = `
                             <p>Address/Current Job: ${userData.currentJob}</p>
+                            <p>Date : ${userData.date}</p>
                             <p>Starting Time: ${userData.startingTime}</p>
                             <p>Ending Time: ${userData.endingTime}</p>
                             <button onclick="acceptJob('${childSnapshot.key}')" type="button">Accept</button>
