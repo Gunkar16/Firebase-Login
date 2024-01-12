@@ -127,6 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var informationDiv = document.getElementById("informationSection");
     var userNameInfo = document.getElementById("userNameInfo");
     var userPasswordInfo = document.getElementById("userPasswordInfo");
+    var userEmailInfo = document.getElementById("userEmailInfo");
 
     function showMyJobs() {
         currentStatusDiv.style.display = "none";
@@ -230,7 +231,9 @@ document.addEventListener("DOMContentLoaded", function () {
                             const userData = snapshot.val();
                             // Access the password and other fields
                             const password = userData.Password;
+                            const email = userData.Email;
                             userPasswordInfo.value = password;
+                            userEmailInfo.innerHTML = email;
                         })
                         .catch(function (error) {
                             console.error('Error retrieving user information: ', error);
