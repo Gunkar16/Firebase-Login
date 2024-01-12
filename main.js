@@ -57,7 +57,6 @@ function login() {
                     // Update User data
                     var user_data = {
                         Email: email,
-                        Password: password,
                         LastSync: datetime, 
                         Name: userData.Name // Assuming you have a 'name' field in your user data
                     }

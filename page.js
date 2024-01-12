@@ -283,30 +283,45 @@ document.getElementById("confirmPasswordButton").addEventListener("click", funct
         return;
     }
 
-    // Retrieve the user's ID
-    var userId;
-    usersRef.orderByChild('Name').equalTo(userName).once('value')
-        .then(function (snapshot) {
-            snapshot.forEach(function (childSnapshot) {
-                userId = childSnapshot.key;
-            });
-        })
-        .then(function () {
-            if (userId) {
+    // Retrieve the current authenticated user
+    var user = firebase.auth().currentUser;
+
+    // Check if a user is authenticated
+    if (user) {
+        // Update the user's password in Firebase Authentication
+        user.updatePassword(newPassword)
+            .then(function () {
                 // Update the user's password in the database
-                usersRef.child(userId).update({
-                    Password: newPassword
-                })
+                var userId;
+                usersRef.orderByChild('Name').equalTo(userName).once('value')
+                    .then(function (snapshot) {
+                        snapshot.forEach(function (childSnapshot) {
+                            userId = childSnapshot.key;
+                        });
+                    })
                     .then(function () {
-                        alert('Password updated successfully.');
+                        if (userId) {
+                            // Update the user's password in the database
+                            usersRef.child(userId).update({
+                                Password: newPassword
+                            })
+                                .then(function () {
+                                    alert('Password updated successfully.');
+                                })
+                                .catch(function (error) {
+                                    console.error('Error updating password in the database: ', error);
+                                });
+                        }
                     })
                     .catch(function (error) {
-                        console.error('Error updating password: ', error);
+                        console.error('Error retrieving user ID: ', error);
                     });
-            }
-        })
-        .catch(function (error) {
-            console.error('Error retrieving user ID: ', error);
-        });
+            })
+            .catch(function (error) {
+                console.error('Error updating password in Firebase Authentication: ', error);
+            });
+    } else {
+        console.error('No authenticated user found.');
+    }
 });
 
