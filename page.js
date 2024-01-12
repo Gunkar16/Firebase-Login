@@ -282,7 +282,7 @@ document.getElementById("confirmPasswordButton").addEventListener("click", funct
 
     // Retrieve the user's ID
     var userId;
-    usersRef.orderByChild('name').equalTo(userName).once('value')
+    usersRef.orderByChild('Name').equalTo(userName).once('value')
         .then(function (snapshot) {
             snapshot.forEach(function (childSnapshot) {
                 userId = childSnapshot.key;
