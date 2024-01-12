@@ -42,11 +42,11 @@ function login() {
                 .then(function (snapshot) {
                     // Get user data
                     var userData = snapshot.val()
-
+                    console.log(userData.Name)
                     // Store user name in local storage
-                    localStorage.setItem('userName', userData.name)
+                    localStorage.setItem('userName', userData.Name)
 
-                    // Update last_sync in Firebase Database
+                    // Update last_sync in Firebase Database    
                     var currentdate = new Date();
                     var datetime = currentdate.getDate() + "/"
                         + (currentdate.getMonth() + 1) + "/"
@@ -56,10 +56,10 @@ function login() {
                         + currentdate.getSeconds();
                     // Update User data
                     var user_data = {
-                        email: email,
-                        password: password,
-                        last_sync: datetime,
-                        name: userData.name // Assuming you have a 'name' field in your user data
+                        Email: email,
+                        Password: password,
+                        LastSync: datetime, 
+                        Name: userData.Name // Assuming you have a 'name' field in your user data
                     }
 
                     // Push to Firebase Database

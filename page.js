@@ -17,7 +17,45 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const database = firebase.database();
-const usersRef = database.ref('users'); // Define usersRef here
+
+
+
+
+// Reference to the 'users' section in the database
+var usersRef = database.ref('users');
+
+// Query the database to find the user key based on the user's name
+usersRef.orderByChild('Name').equalTo(userName).once('value')
+    .then(function(snapshot) {
+        if (snapshot.exists()) {
+            // Get the user key from the snapshot
+            var userKey = Object.keys(snapshot.val())[0];
+            
+            // Retrieve the current date and time
+            var currentdate = new Date();
+            var datetime = currentdate.getDate() + "/"
+                + (currentdate.getMonth() + 1) + "/"
+                + currentdate.getFullYear() + " @ "
+                + currentdate.getHours() + ":"
+                + currentdate.getMinutes() + ":"
+                + currentdate.getSeconds();
+
+            // Update the LastSync key with the current date and time
+            usersRef.child(userKey).update({
+                LastSync: datetime
+            });
+
+            console.log('LastSync updated successfully.');
+        } else {
+            console.error('User not found in the database.');
+        }
+    })
+    .catch(function(error) {
+        console.error('Error fetching user data: ', error);
+    });
+
+
+
 
 // Function to handle accepting a job
 function acceptJob(userKey) {
@@ -25,8 +63,8 @@ function acceptJob(userKey) {
 
     // Update the response and jobEnded keys
     usersRef.child(userKey).update({
-        response: 'yes',
-        jobEnded: 'No'
+        Response: 'Yes',
+        JobEnded: 'No'
     });
 
     // Notify the user that the job has been accepted
@@ -42,7 +80,7 @@ function declineJob(userKey) {
 
     // Update the response key
     usersRef.child(userKey).update({
-        response: 'no'
+        Response: 'No'
     });
 
     // Notify the user that the job has been declined
@@ -56,17 +94,32 @@ function declineJob(userKey) {
 function endJob(userKey) {
     var usersRef = database.ref('users');
 
-    // Update the jobEnded key to 'Yes'
-    usersRef.child(userKey).update({
-        jobEnded: 'Yes'
-    });
+    // Retrieve the current value of JobsCompleted
+    usersRef.child(userKey).child('JobsCompleted').once('value')
+        .then(function (snapshot) {
+            // Get the current JobsCompleted value
+            var currentJobsCompleted = snapshot.val();
 
-    // Notify the user that the job has been ended
-    alert('Job ended successfully.');
+            // Print the current JobsCompleted value to the console
+            console.log('Current JobsCompleted value:', currentJobsCompleted);
 
-    // Refresh the entire page
-    location.reload();
+            // Update the jobEnded key to 'Yes'
+            usersRef.child(userKey).update({
+                JobEnded: 'Yes',
+                JobsCompleted: currentJobsCompleted + 1
+            });
+
+            // Notify the user that the job has been ended
+            alert('Job ended successfully.');
+
+            // Refresh the entire page
+            location.reload();
+        })
+        .catch(function (error) {
+            console.error('Error retrieving JobsCompleted value:', error);
+        });
 }
+
 
 document.addEventListener("DOMContentLoaded", function () {
     var currentStatusDiv = document.getElementById("currentStatus");
@@ -85,7 +138,7 @@ document.addEventListener("DOMContentLoaded", function () {
         var usersRef = database.ref('users');
 
         // Find the user with the selected name
-        usersRef.orderByChild('name').equalTo(userName).once('value')
+        usersRef.orderByChild('Name').equalTo(userName).once('value')
             .then(function (snapshot) {
                 var jobsExist = false;
 
@@ -93,17 +146,17 @@ document.addEventListener("DOMContentLoaded", function () {
                     var userData = childSnapshot.val();
 
                     // Check if the user has a job assigned and hasn't responded yet
-                    if (userData.currentJob && userData.response === 'no response') {
+                    if (userData.CurrentJob && userData.Response === 'No response') {
                         // Create a div to display job details
                         var jobDiv = document.createElement('div');
                         jobDiv.classList.add('job-details');
 
                         // Display job details
                         jobDiv.innerHTML = `
-                            <p>Address/Current Job: ${userData.currentJob}</p>
-                            <p>Date : ${userData.date}</p>
-                            <p>Starting Time: ${userData.startingTime}</p>
-                            <p>Ending Time: ${userData.endingTime}</p>
+                            <p>Address/Current Job: ${userData.CurrentJob}</p>
+                            <p>Date : ${userData.Date}</p>
+                            <p>Starting Time: ${userData.StartingTime}</p>
+                            <p>Ending Time: ${userData.EndingTime}</p>
                             <button onclick="acceptJob('${childSnapshot.key}')" type="button">Accept</button>
                             <button onclick="declineJob('${childSnapshot.key}')" type="button">Decline</button>
                         `;
@@ -134,16 +187,18 @@ document.addEventListener("DOMContentLoaded", function () {
         var usersRef = database.ref('users');
 
         // Find the user with the selected name
-        usersRef.orderByChild('name').equalTo(userName).once('value')
+        usersRef.orderByChild('Name').equalTo(userName).once('value')
             .then(function (snapshot) {
                 snapshot.forEach(function (childSnapshot) {
                     var userData = childSnapshot.val();
-
+                    var statusH1 = document.getElementById('Status');
                     // Check if the user has accepted a job
-                    if (userData.response === 'yes' && userData.jobEnded === 'No') {
-                        var statusH1 = document.getElementById('Status');
-                        statusH1.innerHTML = `At ${userData.currentJob} from ${userData.startingTime} to ${userData.endingTime} on ${userData.date}
+                    if (userData.Response === 'Yes' && userData.JobEnded === 'No') {
+                        statusH1.innerHTML = `At ${userData.CurrentJob} from ${userData.StartingTime} to ${userData.EndingTime} on ${userData.Date}
                         <br><button id="end" onclick="endJob('${childSnapshot.key}')" type="submit">End Job</button>`;
+                    }
+                    else {
+                        statusH1.innerHTML = "None";
                     }
                 });
             })
@@ -162,7 +217,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Retrieve the user's password from the database and display it
         var userId;
-        usersRef.orderByChild('name').equalTo(userName).once('value')
+        usersRef.orderByChild('Name').equalTo(userName).once('value')
             .then(function (snapshot) {
                 snapshot.forEach(function (childSnapshot) {
                     userId = childSnapshot.key;
@@ -174,7 +229,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         .then(function (snapshot) {
                             const userData = snapshot.val();
                             // Access the password and other fields
-                            const password = userData.password;
+                            const password = userData.Password;
                             userPasswordInfo.value = password;
                         })
                         .catch(function (error) {
@@ -195,12 +250,12 @@ document.addEventListener("DOMContentLoaded", function () {
         currentStatusDiv.style.display = "flex";
         myJobsDiv.style.display = "none";
         informationDiv.style.display = "none";
-        
+
         // Update the current job status in the Current Status section
         updateCurrentStatus();
-    
+
     });
-    
+
 
     updateCurrentStatus();
 });
@@ -237,14 +292,14 @@ document.getElementById("confirmPasswordButton").addEventListener("click", funct
             if (userId) {
                 // Update the user's password in the database
                 usersRef.child(userId).update({
-                    password: newPassword
+                    Password: newPassword
                 })
-                .then(function () {
-                    alert('Password updated successfully.');
-                })
-                .catch(function (error) {
-                    console.error('Error updating password: ', error);
-                });
+                    .then(function () {
+                        alert('Password updated successfully.');
+                    })
+                    .catch(function (error) {
+                        console.error('Error updating password: ', error);
+                    });
             }
         })
         .catch(function (error) {
