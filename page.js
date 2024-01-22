@@ -58,10 +58,9 @@ usersRef.orderByChild('information/Name').equalTo(userName).once('value')
 // Function to handle accepting a job
 function acceptJob(userKey, jobKey) {
     var usersRef = database.ref('users');
-    var url = "https://wa.me/" + "61433409278" + "?text=I have accepted the shift for " + jobKey;
+
 
     // Open WhatsApp link to notify about accepting the specific job
-    window.open(url, "_blank").focus();
 
     // Construct the path to the specific job's Response and JobEnded keys
     var responsePath = `${userKey}/${jobKey}/Response`;
@@ -73,6 +72,8 @@ function acceptJob(userKey, jobKey) {
         .then(function () {
             // Notify the user that the job has been accepted
             alert('Job accepted successfully.');
+            var url = "https://wa.me/" + "61433409278" + "?text=I have accepted the shift for " + jobKey;
+            window.open(url, "_blank").focus();
         })
         .catch(function (error) {
             console.error('Error updating job response and status: ', error);
@@ -85,10 +86,8 @@ function acceptJob(userKey, jobKey) {
 // Function to handle declining a job
 function declineJob(userKey, jobKey) {
     var usersRef = database.ref('users');
-    var url = "https://wa.me/" + "61433409278" + "?text=I have declined the shift for " + jobKey;
     
     // Open WhatsApp link to notify about declining the specific job
-    window.open(url, "_blank").focus();
 
     // Construct the path to the specific job's Response key
     var responsePath = `${userKey}/${jobKey}/Response`;
@@ -98,6 +97,9 @@ function declineJob(userKey, jobKey) {
         .then(function () {
             // Notify the user that the job has been declined
             alert('Job declined successfully.');
+            var url = "https://wa.me/" + "61433409278" + "?text=I have declined the shift for " + jobKey;
+            window.open(url, "_blank").focus();
+
         })
         .catch(function (error) {
             console.error('Error updating job response: ', error);
@@ -111,9 +113,7 @@ function endJob(userKey, jobKey) {
     var usersRef = database.ref('users');
     var jobRef = usersRef.child(userKey).child(jobKey);
 
-    // Open WhatsApp to notify about ending the shift
-    var url = "https://wa.me/" + "61433409278" + "?text=I have ended the shift";
-    window.open(url, "_blank").focus();
+
 
     // Retrieve the current value of JobsCompleted
     usersRef.child(userKey + "/information").child('JobsCompleted').once('value')
@@ -174,7 +174,9 @@ function endJob(userKey, jobKey) {
 
                                         // Notify the user that the job has been ended
                                         alert('Job ended successfully.');
-
+    // Open WhatsApp to notify about ending the shift
+    var url = "https://wa.me/" + "61433409278" + "?text=I have ended the shift";
+    window.open(url, "_blank").focus();
                                         // Refresh the entire page
                                         location.reload();
                                     } else {
