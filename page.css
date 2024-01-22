@@ -1,0 +1,280 @@
+@import url(https://fonts.googleapis.com/css?family=Raleway);
+
+html, body {
+  margin: 0;
+  height: 100%;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Raleway";
+  box-sizing: border-box;
+}
+
+.top-nav {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  border-bottom: #7FBD40 5px solid;
+  color: black;
+  height: 90px;
+  padding: 1em;
+}
+
+.menu {
+  display: flex;
+  flex-direction: row;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu > li {
+  margin: 0 1rem;
+  overflow: hidden;
+  transition: 0.3s ease;
+  cursor: pointer;
+  padding: 16px 16px;
+  border-radius: 30px;
+  font-weight: 600;
+  font-family: "Montserrat", sans-serif;
+  font-size: 1rem;
+}
+
+.menu > li:hover {
+  background-color: #7FBD40;
+  color: white;
+}
+
+.menu-button-container {
+  display: none;
+  height: 100%;
+  width: 30px;
+  cursor: pointer;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#menu-toggle {
+  display: none;
+}
+
+.menu-button,
+.menu-button::before,
+.menu-button::after {
+  display: block;
+  background-color: #fff;
+  position: absolute;
+  height: 4px;
+  width: 30px;
+  transition: transform 400ms cubic-bezier(0.23, 1, 0.32, 1);
+  border-radius: 2px;
+  background-color: #7FBD40;
+}
+
+.menu-button::before {
+  content: '';
+  margin-top: -8px;
+}
+
+.menu-button::after {
+  content: '';
+  margin-top: 8px;
+}
+
+#menu-toggle:checked + .menu-button-container .menu-button::before {
+  margin-top: 0px;
+  transform: rotate(405deg);
+}
+
+#menu-toggle:checked + .menu-button-container .menu-button {
+  background: rgba(255, 255, 255, 0);
+}
+
+#menu-toggle:checked + .menu-button-container .menu-button::after {
+  margin-top: 0px;
+  transform: rotate(-405deg);
+}
+#currentStatus h1{
+  margin-top: 10px;
+}
+@media (max-width: 850px) {
+  .menu-button-container {
+    display: flex;
+  }
+  .menu {
+    position: absolute;
+    top: 0;
+    margin-top: 90px;
+    left: 0;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+  }
+  #menu-toggle ~ .menu li {
+    height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    transition: height 400ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  #menu-toggle:checked ~ .menu li {
+    border: 1px solid #333;
+    height: 2.5em;
+    padding: 0.5em;
+    transition: height 400ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .menu > li {
+    border-radius: 0px;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    padding: 0.5em 0;
+    width: 100%;
+    color: white;
+    background-color: #222;
+  }
+  .menu > li:not(:last-child) {
+    border-bottom: 1px solid #444;
+  }
+}
+
+@media (max-width: 400px) {
+  #logo {
+    width: 200px !important;
+  }
+}
+
+#logo {
+  margin-left: 10px;
+  width: 280px;
+}
+
+#currentStatus {
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+  font-size: 30px;
+  flex-direction: column;
+  align-items: center;
+}
+
+#welcomeName {
+  color: #7FBD40;
+}
+#welcome{
+  text-align: center;
+}
+
+.job-details {
+  background-color: #f2f2f2;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+#myJobs p {
+  margin: 10px 0;
+}
+
+#myJobs button {
+  margin: 5px;
+  padding: 10px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #7FBD40;
+  color: white;
+  font-size: 16px;
+}
+
+#myJobs button:hover {
+  background-color: #5a8f32;
+}
+#Status{
+  text-align: center;
+}
+#end{
+  background-color:#7FBD40;
+  width:150px;
+  height:150px;
+  color: white;
+  font-size:30px;
+  border-radius: 50%;
+  margin-top: 20px;
+}
+#noJob{
+  font-size: 80px;
+}
+#myJobs{
+  text-align: center;
+}
+/* ... (existing code) ... */
+
+#informationSection {
+  flex-direction: column;
+  /* justify-content: center; */
+  align-items: center;
+  margin: 30px;
+  font-size: 20px;
+}
+
+#userInfo {
+  background-color: #f2f2f2;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 10px;
+  width:60%;
+}
+
+#userInfo p {
+  margin: 10px 0px;
+  font-size: 20px;
+}
+
+/* ... (existing code) ... */
+#checkContainer{
+  display: flex;
+}
+#checkContainer p{
+  margin-right: 10px;
+  margin-top: 0;
+}
+#confirmPasswordButton{
+  color: white;
+  background-color: #7FBD40;
+  /* margin: 5px; */
+  padding: 10px;
+  cursor: pointer;
+  /* width:200px; */
+  border-radius: 30px;
+
+}
+#confirmPasswordButton:hover {
+  background-color: #5a8f32;
+}
+@media (max-width: 600px) {
+  #userInfo{
+    width:90%;
+  }
+  #informationSection h1{
+    font-size: 25px;
+  }
+  #currentStatus h1{
+    font-size: 35px;
+  }
+  #currentStatus button{
+    width:125px;
+    height:125px; 
+    font-size: 25px;
+  }
+  #userInfo p {
+    font-size: 15px;
+  }
+}
