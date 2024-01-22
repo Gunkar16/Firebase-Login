@@ -19,13 +19,11 @@ const auth = firebase.auth();
 const database = firebase.database();
 
 
-
-
 // Reference to the 'users' section in the database
 var usersRef = database.ref('users');
 
 // Query the database to find the user key based on the user's name
-usersRef.orderByChild('Name').equalTo(userName).once('value')
+usersRef.orderByChild('information/Name').equalTo(userName).once('value')
     .then(function(snapshot) {
         if (snapshot.exists()) {
             // Get the user key from the snapshot
@@ -41,7 +39,7 @@ usersRef.orderByChild('Name').equalTo(userName).once('value')
                 + currentdate.getSeconds();
 
             // Update the LastSync key with the current date and time
-            usersRef.child(userKey).update({
+            usersRef.child(userKey + "/information").update({
                 LastSync: datetime
             });
 
@@ -58,108 +56,135 @@ usersRef.orderByChild('Name').equalTo(userName).once('value')
 
 
 // Function to handle accepting a job
-function acceptJob(userKey) {
+function acceptJob(userKey, jobKey) {
     var usersRef = database.ref('users');
-    url = "https://wa.me/"+"61433409278"+"?text=I have accepted the shift";
-    window.open(url,"_blank").focus()
-    // Update the response and jobEnded keys
-    usersRef.child(userKey).update({
-        Response: 'Yes',
-        JobEnded: 'No'
-    });
+    var url = "https://wa.me/" + "61433409278" + "?text=I have accepted the shift for " + jobKey;
 
-    // Notify the user that the job has been accepted
-    alert('Job accepted successfully.');
+    // Open WhatsApp link to notify about accepting the specific job
+    window.open(url, "_blank").focus();
+
+    // Construct the path to the specific job's Response and JobEnded keys
+    var responsePath = `${userKey}/${jobKey}/Response`;
+    var jobEndedPath = `${userKey}/${jobKey}/JobEnded`;
+
+    // Update the response and jobEnded keys for the specific job
+    usersRef.child(responsePath).set('Yes');
+    usersRef.child(jobEndedPath).set('No')
+        .then(function () {
+            // Notify the user that the job has been accepted
+            alert('Job accepted successfully.');
+        })
+        .catch(function (error) {
+            console.error('Error updating job response and status: ', error);
+        });
 
     location.reload();
-
 }
 
+
 // Function to handle declining a job
-function declineJob(userKey) {
+function declineJob(userKey, jobKey) {
     var usersRef = database.ref('users');
-    url = "https://wa.me/"+"61433409278"+"?text=I have declined the shift";
-    window.open(url,"_blank").focus()
+    var url = "https://wa.me/" + "61433409278" + "?text=I have declined the shift for " + jobKey;
+    
+    // Open WhatsApp link to notify about declining the specific job
+    window.open(url, "_blank").focus();
 
-    // Update the response key
-    usersRef.child(userKey).update({
-        Response: 'No'
-    });
+    // Construct the path to the specific job's Response key
+    var responsePath = `${userKey}/${jobKey}/Response`;
 
-    // Notify the user that the job has been declined
-    alert('Job declined successfully.');
+    // Update the response key for the specific job
+    usersRef.child(responsePath).set('No')
+        .then(function () {
+            // Notify the user that the job has been declined
+            alert('Job declined successfully.');
+        })
+        .catch(function (error) {
+            console.error('Error updating job response: ', error);
+        });
 
     location.reload();
-
 }
 
 // Function to handle ending a job
-function endJob(userKey) {
+function endJob(userKey, jobKey) {
     var usersRef = database.ref('users');
-    url = "https://wa.me/"+"61433409278"+"?text=I have ended the shift";
-    window.open(url,"_blank").focus()
+    var jobRef = usersRef.child(userKey).child(jobKey);
+
+    // Open WhatsApp to notify about ending the shift
+    var url = "https://wa.me/" + "61433409278" + "?text=I have ended the shift";
+    window.open(url, "_blank").focus();
+
     // Retrieve the current value of JobsCompleted
-    usersRef.child(userKey).child('JobsCompleted').once('value')
+    usersRef.child(userKey + "/information").child('JobsCompleted').once('value')
         .then(function (snapshot) {
             // Get the current JobsCompleted value
             var currentJobsCompleted = snapshot.val();
 
             // Retrieve the current value of StartingTime
-            usersRef.child(userKey).child('StartingTime').once('value')
+            jobRef.child('StartingTime').once('value')
                 .then(function (startSnapshot) {
                     // Get the current StartingTime value
                     var startingTime = startSnapshot.val();
 
                     // Retrieve the current value of EndingTime
-                    usersRef.child(userKey).child('EndingTime').once('value')
+                    jobRef.child('EndingTime').once('value')
                         .then(function (endSnapshot) {
                             var endingTime = endSnapshot.val();
-                            usersRef.child(userKey).child('TotalWorkingHours').once('value')
-                            .then(function (endSnapshot) {
-                            var PreviousWorkingHours = endSnapshot.val();
-                            console.log(PreviousWorkingHours)
-                            let [previousHour, previousMinute] = PreviousWorkingHours.split(':');
-                            previous_total_minutes = parseInt(previousHour) * 60 + parseInt(previousMinute)
 
-                            startHour = parseInt(startingTime.slice(0,2))
-                            endHour = parseInt(endingTime.slice(0,2))
-                            startMinute = parseInt(startingTime.slice(3,5))
-                            endMinute = parseInt(endingTime.slice(3,5))
+                            // Retrieve the current value of TotalWorkingHours from the 'information' node
+                            usersRef.child(userKey + "/information/TotalWorkingHours").once('value')
+                                .then(function (totalHoursSnapshot) {
+                                    var previousWorkingHours = totalHoursSnapshot.val();
 
-                            console.log(startHour)
-                            console.log(endHour)
-                            console.log(startMinute)
-                            console.log(endMinute)
-                            total_minutes_start = startHour * 60 + startMinute
-                            total_minutes_end = endHour * 60 + endMinute
-                            if (total_minutes_end < total_minutes_start){ 
-                                total_minutes_end =  endHour * 60 + endMinute + 24 * 60
-                            } 
-                            else{
-                                total_minutes_end = endHour * 60 + endMinute
-                            }
-                            finalTime = total_minutes_end - total_minutes_start + previous_total_minutes
-                            finalHour = Math.floor(finalTime / 60)
-                            finalMinutes = finalTime % 60
-                            console.log(finalHour)
-                            console.log(finalMinutes)
-                            totalWorkingHours = finalHour.toString() + ":" + finalMinutes.toString()
-                            console.log('Total Working Hours: ', totalWorkingHours);
+                                    // Check if TotalWorkingHours is not null before splitting
+                                    if (previousWorkingHours !== null) {
+                                        // Calculate total working hours
+                                        let [previousHour, previousMinute] = previousWorkingHours.split(':');
+                                        let previousTotalMinutes = parseInt(previousHour) * 60 + parseInt(previousMinute);
 
-                            // Update the jobEnded key to 'Yes' and update JobsCompleted and TotalWorkingHours
-                            usersRef.child(userKey).update({
-                                JobEnded: 'Yes',
-                                JobsCompleted: currentJobsCompleted + 1,
-                                TotalWorkingHours: totalWorkingHours
-                            });
+                                        let startHour = parseInt(startingTime.slice(0, 2));
+                                        let endHour = parseInt(endingTime.slice(0, 2));
+                                        let startMinute = parseInt(startingTime.slice(3, 5));
+                                        let endMinute = parseInt(endingTime.slice(3, 5));
 
-                            // Notify the user that the job has been ended
-                            alert('Job ended successfully.');
+                                        let totalMinutesStart = startHour * 60 + startMinute;
+                                        let totalMinutesEnd = endHour * 60 + endMinute;
 
-                            // Refresh the entire page
-                            location.reload();
+                                        if (totalMinutesEnd < totalMinutesStart) {
+                                            totalMinutesEnd = endHour * 60 + endMinute + 24 * 60;
+                                        } else {
+                                            totalMinutesEnd = endHour * 60 + endMinute;
+                                        }
+
+                                        let finalTime = totalMinutesEnd - totalMinutesStart + previousTotalMinutes;
+                                        let finalHour = Math.floor(finalTime / 60);
+                                        let finalMinutes = finalTime % 60;
+                                        let totalWorkingHours = finalHour.toString() + ":" + finalMinutes.toString();
+
+                                        // Update the jobEnded key to 'Yes', JobsCompleted, and TotalWorkingHours
+                                        jobRef.update({
+                                            JobEnded: 'Yes'
+                                        });
+
+                                        usersRef.child(userKey + "/information").update({
+                                            JobsCompleted: currentJobsCompleted + 1,
+                                            TotalWorkingHours: totalWorkingHours
+                                        });
+
+                                        // Notify the user that the job has been ended
+                                        alert('Job ended successfully.');
+
+                                        // Refresh the entire page
+                                        location.reload();
+                                    } else {
+                                        console.error('TotalWorkingHours is null');
+                                    }
+                                })
+                                .catch(function (totalHoursError) {
+                                    console.error('Error retrieving TotalWorkingHours value:', totalHoursError);
+                                });
                         })
-                    })
                         .catch(function (endError) {
                             console.error('Error retrieving EndingTime value:', endError);
                         });
@@ -172,6 +197,7 @@ function endJob(userKey) {
             console.error('Error retrieving JobsCompleted value:', error);
         });
 }
+
 
 
 
@@ -189,41 +215,48 @@ document.addEventListener("DOMContentLoaded", function () {
         myJobsDiv.style.display = "block";
         informationDiv.style.display = "none";
         myJobsDiv.innerHTML = ''; // Clear previous content
-
+    
         // Reference to the 'users' section in the database
         var usersRef = database.ref('users');
-
+    
         // Find the user with the selected name
-        usersRef.orderByChild('Name').equalTo(userName).once('value')
+        usersRef.orderByChild('information/Name').equalTo(userName).once('value')
             .then(function (snapshot) {
                 var jobsExist = false;
-
+    
                 snapshot.forEach(function (childSnapshot) {
                     var userData = childSnapshot.val();
-
-                    // Check if the user has a job assigned and hasn't responded yet
-                    if (userData.CurrentJob && userData.Response === 'No response') {
-                        // Create a div to display job details
-                        var jobDiv = document.createElement('div');
-                        jobDiv.classList.add('job-details');
-
-                        // Display job details
-                        jobDiv.innerHTML = `
-                            <p>Address/Current Job: ${userData.CurrentJob}</p>
-                            <p>Date : ${userData.Date}</p>
-                            <p>Starting Time: ${userData.StartingTime}</p>
-                            <p>Ending Time: ${userData.EndingTime}</p>
-                            <button onclick="acceptJob('${childSnapshot.key}')" type="button">Accept</button>
-                            <button onclick="declineJob('${childSnapshot.key}')" type="button">Decline</button>
-                        `;
-
-                        // Append the job details to the myJobsDiv
-                        myJobsDiv.appendChild(jobDiv);
-
-                        jobsExist = true;
+    
+                    // Check if the user has jobs assigned
+                    for (const jobKey in userData) {
+                        if (jobKey.startsWith('Job')) {
+                            var jobData = userData[jobKey];
+    
+                            // Check if the user hasn't responded to the job
+                            if (jobData.Response === 'No response') {
+                                // Create a div to display job details
+                                var jobDiv = document.createElement('div');
+                                jobDiv.classList.add('job-details');
+    
+                                // Display job details
+                                jobDiv.innerHTML = `
+                                    <p>Address: ${jobData.CurrentJob}</p>
+                                    <p>Date: ${jobData.Date}</p>
+                                    <p>Starting Time: ${jobData.StartingTime}</p>
+                                    <p>Ending Time: ${jobData.EndingTime}</p>
+                                    <button onclick="acceptJob('${childSnapshot.key}', '${jobKey}')" type="button">Accept</button>
+                                    <button onclick="declineJob('${childSnapshot.key}', '${jobKey}')" type="button">Decline</button>
+                                `;
+    
+                                // Append the job details to the myJobsDiv
+                                myJobsDiv.appendChild(jobDiv);
+    
+                                jobsExist = true;
+                            }
+                        }
                     }
                 });
-
+    
                 // Display message if no jobs exist
                 if (!jobsExist) {
                     var noJobsMessage = document.createElement('p');
@@ -236,24 +269,45 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error('Error fetching user details: ', error);
             });
     }
+    
 
     // Function to update the current job status in the Current Status section
     function updateCurrentStatus() {
         // Reference to the 'users' section in the database
         var usersRef = database.ref('users');
-
+    
         // Find the user with the selected name
-        usersRef.orderByChild('Name').equalTo(userName).once('value')
+        usersRef.orderByChild('information/Name').equalTo(userName).once('value')
             .then(function (snapshot) {
                 snapshot.forEach(function (childSnapshot) {
                     var userData = childSnapshot.val();
                     var statusH1 = document.getElementById('Status');
-                    // Check if the user has accepted a job
-                    if (userData.Response === 'Yes' && userData.JobEnded === 'No') {
-                        statusH1.innerHTML = `At ${userData.CurrentJob} from ${userData.StartingTime} to ${userData.EndingTime} on ${userData.Date}
-                        <br><button id="end" onclick="endJob('${childSnapshot.key}')" type="submit">End Job</button>`;
+                    var otherTitle = document.getElementById("otherTitle")
+                    var laterJobsDiv = document.getElementById('laterJobs');
+                    var mainJobDisplayed = false;
+    
+                    // Clear previous content in the laterJobsDiv
+                    laterJobsDiv.innerHTML = '';
+    
+                    for (const jobKey in userData) {
+                        if (jobKey.startsWith('Job')) {
+                            var jobData = userData[jobKey];
+    
+                            // Check if the user has a job assigned, hasn't responded, and the job hasn't ended
+                            if (jobData.Response === 'Yes' && jobData.JobEnded === 'No' && !mainJobDisplayed) {
+                                statusH1.innerHTML = `At ${jobData.CurrentJob} from ${jobData.StartingTime} to ${jobData.EndingTime} on ${jobData.Date}
+                                    <br><button id="end" onclick="endJob('${childSnapshot.key}', '${jobKey}')" type="submit">End Job</button>`;
+                                mainJobDisplayed = true;
+                            } else if (jobData.Response === 'Yes' && jobData.JobEnded === 'No' && mainJobDisplayed) {
+                                // Display later jobs under "Later Jobs" without End Job button
+                                otherTitle.innerHTML = "Other Jobs:"
+                                laterJobsDiv.innerHTML += `At ${jobData.CurrentJob} from ${jobData.StartingTime} to ${jobData.EndingTime} on ${jobData.Date}<br>`;
+                            }
+                        }
                     }
-                    else {
+    
+                    if (!mainJobDisplayed) {
+                        // Display message if no main job exists
                         statusH1.innerHTML = "None";
                     }
                 });
@@ -262,6 +316,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error('Error updating current status: ', error);
             });
     }
+    
+    
+    
 
     function showInformation() {
         currentStatusDiv.style.display = "none";
@@ -273,7 +330,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Retrieve the user's password from the database and display it
         var userId;
-        usersRef.orderByChild('Name').equalTo(userName).once('value')
+        usersRef.orderByChild('information/Name').equalTo(userName).once('value')
             .then(function (snapshot) {
                 snapshot.forEach(function (childSnapshot) {
                     userId = childSnapshot.key;
@@ -281,7 +338,7 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .then(function () {
                 if (userId) {
-                    usersRef.child(userId).once('value')
+                    usersRef.child(userId + "/information").once('value')
                         .then(function (snapshot) {
                             const userData = snapshot.val();
                             // Access the password and other fields
@@ -343,40 +400,55 @@ document.getElementById("confirmPasswordButton").addEventListener("click", funct
 
     // Check if a user is authenticated
     if (user) {
-        // Update the user's password in Firebase Authentication
-        user.updatePassword(newPassword)
+        // Prompt the user to re-authenticate
+        var passwordPrompt = prompt('Please enter your current password to confirm the change.');
+
+        // Create a credential with the user's email and password
+        var credential = firebase.auth.EmailAuthProvider.credential(
+            user.email,
+            passwordPrompt
+        );
+
+        // Re-authenticate the user with the provided credentials
+        user.reauthenticateWithCredential(credential)
             .then(function () {
-                // Update the user's password in the database
-                var userId;
-                usersRef.orderByChild('Name').equalTo(userName).once('value')
-                    .then(function (snapshot) {
-                        snapshot.forEach(function (childSnapshot) {
-                            userId = childSnapshot.key;
-                        });
-                    })
+                // Update the user's password in Firebase Authentication
+                user.updatePassword(newPassword)
                     .then(function () {
-                        if (userId) {
-                            // Update the user's password in the database
-                            usersRef.child(userId).update({
-                                Password: newPassword
-                            })
-                                .then(function () {
-                                    alert('Password updated successfully.');
-                                })
-                                .catch(function (error) {
-                                    console.error('Error updating password in the database: ', error);
+                        // Update the user's password in the database
+                        var userId;
+                        usersRef.orderByChild('information/Name').equalTo(userName).once('value')
+                            .then(function (snapshot) {
+                                snapshot.forEach(function (childSnapshot) {
+                                    userId = childSnapshot.key;
                                 });
-                        }
+                            })
+                            .then(function () {
+                                if (userId) {
+                                    // Update the user's password in the database
+                                    usersRef.child(userId + "/information").update({
+                                        Password: newPassword
+                                    })
+                                        .then(function () {
+                                            alert('Password updated successfully.');
+                                        })
+                                        .catch(function (error) {
+                                            console.error('Error updating password in the database: ', error);
+                                        });
+                                }
+                            })
+                            .catch(function (error) {
+                                console.error('Error retrieving user ID: ', error);
+                            });
                     })
                     .catch(function (error) {
-                        console.error('Error retrieving user ID: ', error);
+                        console.error('Error updating password in Firebase Authentication: ', error);
                     });
             })
             .catch(function (error) {
-                console.error('Error updating password in Firebase Authentication: ', error);
+                console.error('Error re-authenticating user: ', error);
             });
     } else {
         console.error('No authenticated user found.');
     }
 });
-

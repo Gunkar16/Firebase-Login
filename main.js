@@ -37,7 +37,7 @@ function login() {
             var user = auth.currentUser
 
             // Retrieve user data from Firebase Database
-            var database_ref = database.ref('users/' + user.uid)
+            var database_ref = database.ref('users/' + user.uid +"/information")
             database_ref.once('value')
                 .then(function (snapshot) {
                     // Get user data
