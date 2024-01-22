@@ -66,7 +66,7 @@ function login() {
 
                     // Redirect to page.html
                     alert('User Logged In')
-                    window.location.href = "page.html";
+                    window.location.href = "disclaimer.html";
                 })
                 .catch(function (error) {
                     alert('Error retrieving user data: ' + error.message);

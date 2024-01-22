@@ -60,7 +60,8 @@ usersRef.orderByChild('Name').equalTo(userName).once('value')
 // Function to handle accepting a job
 function acceptJob(userKey) {
     var usersRef = database.ref('users');
-
+    url = "https://wa.me/"+"61433409278"+"?text=I have accepted the shift";
+    window.open(url,"_blank").focus()
     // Update the response and jobEnded keys
     usersRef.child(userKey).update({
         Response: 'Yes',
@@ -77,6 +78,8 @@ function acceptJob(userKey) {
 // Function to handle declining a job
 function declineJob(userKey) {
     var usersRef = database.ref('users');
+    url = "https://wa.me/"+"61433409278"+"?text=I have declined the shift";
+    window.open(url,"_blank").focus()
 
     // Update the response key
     usersRef.child(userKey).update({
@@ -93,32 +96,84 @@ function declineJob(userKey) {
 // Function to handle ending a job
 function endJob(userKey) {
     var usersRef = database.ref('users');
-
+    url = "https://wa.me/"+"61433409278"+"?text=I have ended the shift";
+    window.open(url,"_blank").focus()
     // Retrieve the current value of JobsCompleted
     usersRef.child(userKey).child('JobsCompleted').once('value')
         .then(function (snapshot) {
             // Get the current JobsCompleted value
             var currentJobsCompleted = snapshot.val();
 
-            // Print the current JobsCompleted value to the console
-            console.log('Current JobsCompleted value:', currentJobsCompleted);
+            // Retrieve the current value of StartingTime
+            usersRef.child(userKey).child('StartingTime').once('value')
+                .then(function (startSnapshot) {
+                    // Get the current StartingTime value
+                    var startingTime = startSnapshot.val();
 
-            // Update the jobEnded key to 'Yes'
-            usersRef.child(userKey).update({
-                JobEnded: 'Yes',
-                JobsCompleted: currentJobsCompleted + 1
-            });
+                    // Retrieve the current value of EndingTime
+                    usersRef.child(userKey).child('EndingTime').once('value')
+                        .then(function (endSnapshot) {
+                            var endingTime = endSnapshot.val();
+                            usersRef.child(userKey).child('TotalWorkingHours').once('value')
+                            .then(function (endSnapshot) {
+                            var PreviousWorkingHours = endSnapshot.val();
+                            console.log(PreviousWorkingHours)
+                            let [previousHour, previousMinute] = PreviousWorkingHours.split(':');
+                            previous_total_minutes = parseInt(previousHour) * 60 + parseInt(previousMinute)
 
-            // Notify the user that the job has been ended
-            alert('Job ended successfully.');
+                            startHour = parseInt(startingTime.slice(0,2))
+                            endHour = parseInt(endingTime.slice(0,2))
+                            startMinute = parseInt(startingTime.slice(3,5))
+                            endMinute = parseInt(endingTime.slice(3,5))
 
-            // Refresh the entire page
-            location.reload();
+                            console.log(startHour)
+                            console.log(endHour)
+                            console.log(startMinute)
+                            console.log(endMinute)
+                            total_minutes_start = startHour * 60 + startMinute
+                            total_minutes_end = endHour * 60 + endMinute
+                            if (total_minutes_end < total_minutes_start){ 
+                                total_minutes_end =  endHour * 60 + endMinute + 24 * 60
+                            } 
+                            else{
+                                total_minutes_end = endHour * 60 + endMinute
+                            }
+                            finalTime = total_minutes_end - total_minutes_start + previous_total_minutes
+                            finalHour = Math.floor(finalTime / 60)
+                            finalMinutes = finalTime % 60
+                            console.log(finalHour)
+                            console.log(finalMinutes)
+                            totalWorkingHours = finalHour.toString() + ":" + finalMinutes.toString()
+                            console.log('Total Working Hours: ', totalWorkingHours);
+
+                            // Update the jobEnded key to 'Yes' and update JobsCompleted and TotalWorkingHours
+                            usersRef.child(userKey).update({
+                                JobEnded: 'Yes',
+                                JobsCompleted: currentJobsCompleted + 1,
+                                TotalWorkingHours: totalWorkingHours
+                            });
+
+                            // Notify the user that the job has been ended
+                            alert('Job ended successfully.');
+
+                            // Refresh the entire page
+                            location.reload();
+                        })
+                    })
+                        .catch(function (endError) {
+                            console.error('Error retrieving EndingTime value:', endError);
+                        });
+                })
+                .catch(function (startError) {
+                    console.error('Error retrieving StartingTime value:', startError);
+                });
         })
         .catch(function (error) {
             console.error('Error retrieving JobsCompleted value:', error);
         });
 }
+
+
 
 
 document.addEventListener("DOMContentLoaded", function () {
