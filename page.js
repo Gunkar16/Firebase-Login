@@ -70,10 +70,11 @@ function acceptJob(userKey, jobKey) {
     usersRef.child(responsePath).set('Yes');
     usersRef.child(jobEndedPath).set('No')
         .then(function () {
-            // Notify the user that the job has been accepted
-            alert('Job accepted successfully.');
             var url = "https://wa.me/" + "61433409278" + "?text=I have accepted the shift for " + jobKey;
             window.open(url, "_blank").focus();
+            // Notify the user that the job has been accepted
+            alert('Job accepted successfully.');
+
         })
         .catch(function (error) {
             console.error('Error updating job response and status: ', error);
@@ -96,9 +97,10 @@ function declineJob(userKey, jobKey) {
     usersRef.child(responsePath).set('No')
         .then(function () {
             // Notify the user that the job has been declined
-            alert('Job declined successfully.');
             var url = "https://wa.me/" + "61433409278" + "?text=I have declined the shift for " + jobKey;
             window.open(url, "_blank").focus();
+            alert('Job declined successfully.');
+
 
         })
         .catch(function (error) {
@@ -171,12 +173,12 @@ function endJob(userKey, jobKey) {
                                             JobsCompleted: currentJobsCompleted + 1,
                                             TotalWorkingHours: totalWorkingHours
                                         });
-
-                                        // Notify the user that the job has been ended
-                                        alert('Job ended successfully.');
     // Open WhatsApp to notify about ending the shift
     var url = "https://wa.me/" + "61433409278" + "?text=I have ended the shift";
     window.open(url, "_blank").focus();
+                                        // Notify the user that the job has been ended
+                                        alert('Job ended successfully.');
+
                                         // Refresh the entire page
                                         location.reload();
                                     } else {
