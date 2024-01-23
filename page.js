@@ -158,11 +158,18 @@ function endJob(userKey, jobKey) {
                                         } else {
                                             totalMinutesEnd = endHour * 60 + endMinute;
                                         }
-
-                                        let finalTime = totalMinutesEnd - totalMinutesStart + previousTotalMinutes;
+                                        let subtractedMinutes = totalMinutesEnd - totalMinutesStart
+                                        if (subtractedMinutes >= 300){
+                                            finalTime = subtractedMinutes + previousTotalMinutes - 30;
+                                        }
+                                        else{
+                                            finalTime = subtractedMinutes + previousTotalMinutes;
+                                        }
                                         let finalHour = Math.floor(finalTime / 60);
                                         let finalMinutes = finalTime % 60;
+
                                         let totalWorkingHours = finalHour.toString() + ":" + finalMinutes.toString();
+
 
                                         // Update the jobEnded key to 'Yes', JobsCompleted, and TotalWorkingHours
                                         jobRef.update({
@@ -174,13 +181,13 @@ function endJob(userKey, jobKey) {
                                             TotalWorkingHours: totalWorkingHours
                                         });
     // Open WhatsApp to notify about ending the shift
-    var url = "https://wa.me/" + "61433409278" + "?text=I have ended the shift";
-    window.open(url, "_blank").focus();
+    // var url = "https://wa.me/" + "61433409278" + "?text=I have ended the shift";
+    // window.open(url, "_blank").focus();
                                         // Notify the user that the job has been ended
                                         alert('Job ended successfully.');
+                                        location.reload();
 
                                         // Refresh the entire page
-                                        location.reload();
                                     } else {
                                         console.error('TotalWorkingHours is null');
                                     }
@@ -248,8 +255,32 @@ document.addEventListener("DOMContentLoaded", function () {
                                     <p>Date: ${jobData.Date}</p>
                                     <p>Starting Time: ${jobData.StartingTime}</p>
                                     <p>Ending Time: ${jobData.EndingTime}</p>
-                                    <button onclick="acceptJob('${childSnapshot.key}', '${jobKey}')" type="button">Accept</button>
-                                    <button onclick="declineJob('${childSnapshot.key}', '${jobKey}')" type="button">Decline</button>
+
+                                    <div id="buttonHolder">
+                                    <form action="https://formsubmit.co/gunkarsinghjohal@gmail.com" method="POST">
+                                    <input class="hidden" type="text" name="ID" value="${userData.information.ID}">
+                                    <input class="hidden" type="text" name="Name" value="${userData.information.Name}">
+                                    <input class="hidden" type="text" name="JobID" value="${jobKey}">
+                                    <input class="hidden" type="text" name="Address" value="${jobData.CurrentJob}">
+                                    <input class="hidden" type="text" name="Date" value="${jobData.Date}">
+                                    <input class="hidden" type="text" name="Starting Time" value="${jobData.StartingTime}">
+                                    <input class="hidden" type="text" name="Ending Time" value="${jobData.EndingTime}">
+                                    <input class="hidden" type="text" name="Response" value="I have accepted the shift">
+                                    <button onclick="acceptJob('${childSnapshot.key}', '${jobKey}')" type="submit">Accept</button>
+                                    </form>
+
+                                    <form action="https://formsubmit.co/gunkarsinghjohal@gmail.com" method="POST">
+                                    <input class="hidden" type="text" name="ID" value="${userData.information.ID}">
+                                    <input class="hidden" type="text" name="Name" value="${userData.information.Name}">
+                                    <input class="hidden" type="text" name="JobID" value="${jobKey}">
+                                    <input class="hidden" type="text" name="Address" value="${jobData.CurrentJob}" >
+                                    <input class="hidden" type="text" name="Date" value="${jobData.Date}">
+                                    <input class="hidden" type="text" name="Starting Time" value="${jobData.StartingTime}">
+                                    <input class="hidden" type="text" name="Ending Time" value="${jobData.EndingTime}">
+                                    <input class="hidden" type="text" name="Response" value="I have declined the shift">
+                                    <button onclick="declineJob('${childSnapshot.key}', '${jobKey}')" type="submit">Decline</button>
+                                    </form>
+                                    </div>
                                 `;
     
                                 // Append the job details to the myJobsDiv
@@ -300,7 +331,22 @@ document.addEventListener("DOMContentLoaded", function () {
                             // Check if the user has a job assigned, hasn't responded, and the job hasn't ended
                             if (jobData.Response === 'Yes' && jobData.JobEnded === 'No' && !mainJobDisplayed) {
                                 statusH1.innerHTML = `At ${jobData.CurrentJob} from ${jobData.StartingTime} to ${jobData.EndingTime} on ${jobData.Date}
-                                    <br><button id="end" onclick="endJob('${childSnapshot.key}', '${jobKey}')" type="submit">End Job</button>`;
+                                    <br>
+                                    <div id="buttonHolder">
+                                    <form action="https://formsubmit.co/gunkarsinghjohal@gmail.com" method="POST">
+                                    <input class="hidden" type="text" name="ID" value="${userData.information.ID}">
+                                    <input class="hidden" type="text" name="Name" value="${userData.information.Name}">
+                                    <input class="hidden" type="text" name="JobID" value="${jobKey}">
+                                    <input class="hidden" type="text" name="Address" value="${jobData.CurrentJob}">
+                                    <input class="hidden" type="text" name="Date" value="${jobData.Date}">
+                                    <input class="hidden" type="text" name="Starting Time" value="${jobData.StartingTime}">
+                                    <input class="hidden" type="text" name="Ending Time" value="${jobData.EndingTime}">
+                                    <input class="hidden" type="text" name="Response" value="I have ended the shift">
+                                    <button id="end" onclick="endJob('${childSnapshot.key}', '${jobKey}')" type="submit">End Job</button>           
+                                    </form>                         
+                                    </div>
+                                    `
+                                    ;
                                 mainJobDisplayed = true;
                             } else if (jobData.Response === 'Yes' && jobData.JobEnded === 'No' && mainJobDisplayed) {
                                 // Display later jobs under "Later Jobs" without End Job button

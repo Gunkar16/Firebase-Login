@@ -281,3 +281,14 @@ html, body {
 #laterJobs{
   text-align: center;
 }
+form{
+  width:min-content;
+  text-align: center;
+}
+#buttonHolder{
+  display: flex;
+  justify-content: center;
+}
+.hidden{
+  display:none;
+}
