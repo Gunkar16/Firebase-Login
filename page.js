@@ -70,17 +70,22 @@ function acceptJob(userKey, jobKey) {
     usersRef.child(responsePath).set('Yes');
     usersRef.child(jobEndedPath).set('No')
         .then(function () {
-            var url = "https://wa.me/" + "61433409278" + "?text=I have accepted the shift for " + jobKey;
-            window.open(url, "_blank").focus();
+
             // Notify the user that the job has been accepted
             alert('Job accepted successfully.');
-
+            var url = "https://wa.me/" + "61433409278" + "?text=I have accepted the shift for " + jobKey;
+            window.open(url, "_blank").focus();
+            setTimeout(function() {
+                console.log("Timer is done!");
+              }, 2000);
+              
+                location.reload();  
         })
         .catch(function (error) {
             console.error('Error updating job response and status: ', error);
         });
-
-    location.reload();
+// Set a timer for 2 seconds with an anonymous function
+ 
 }
 
 
@@ -97,17 +102,22 @@ function declineJob(userKey, jobKey) {
     usersRef.child(responsePath).set('No')
         .then(function () {
             // Notify the user that the job has been declined
+
+            alert('Job declined successfully.');
             var url = "https://wa.me/" + "61433409278" + "?text=I have declined the shift for " + jobKey;
             window.open(url, "_blank").focus();
-            alert('Job declined successfully.');
-
+            setTimeout(function() {
+                console.log("Timer is done!");
+              }, 2000);
+              
+                location.reload();  
 
         })
         .catch(function (error) {
             console.error('Error updating job response: ', error);
         });
-
-    location.reload();
+// Set a timer for 2 seconds with an anonymous function
+     
 }
 
 // Function to handle ending a job
@@ -181,12 +191,16 @@ function endJob(userKey, jobKey) {
                                             TotalWorkingHours: totalWorkingHours
                                         });
     // Open WhatsApp to notify about ending the shift
-    // var url = "https://wa.me/" + "61433409278" + "?text=I have ended the shift";
-    // window.open(url, "_blank").focus();
+
                                         // Notify the user that the job has been ended
                                         alert('Job ended successfully.');
-                                        location.reload();
-
+                                        var url = "https://wa.me/" + "61433409278" + "?text=I have ended the shift";
+                                        window.open(url, "_blank").focus();
+                                        setTimeout(function() {
+                                            console.log("Timer is done!");
+                                          }, 2000);
+                                          
+                                                location.reload();
                                         // Refresh the entire page
                                     } else {
                                         console.error('TotalWorkingHours is null');
@@ -207,6 +221,9 @@ function endJob(userKey, jobKey) {
         .catch(function (error) {
             console.error('Error retrieving JobsCompleted value:', error);
         });
+        // Set a timer for 2 seconds with an anonymous function
+
+
 }
 
 
@@ -257,7 +274,6 @@ document.addEventListener("DOMContentLoaded", function () {
                                     <p>Ending Time: ${jobData.EndingTime}</p>
 
                                     <div id="buttonHolder">
-                                    <form action="https://formsubmit.co/gunkarsinghjohal@gmail.com" method="POST">
                                     <input class="hidden" type="text" name="ID" value="${userData.information.ID}">
                                     <input class="hidden" type="text" name="Name" value="${userData.information.Name}">
                                     <input class="hidden" type="text" name="JobID" value="${jobKey}">
@@ -267,9 +283,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                     <input class="hidden" type="text" name="Ending Time" value="${jobData.EndingTime}">
                                     <input class="hidden" type="text" name="Response" value="I have accepted the shift">
                                     <button onclick="acceptJob('${childSnapshot.key}', '${jobKey}')" type="submit">Accept</button>
-                                    </form>
 
-                                    <form action="https://formsubmit.co/gunkarsinghjohal@gmail.com" method="POST">
                                     <input class="hidden" type="text" name="ID" value="${userData.information.ID}">
                                     <input class="hidden" type="text" name="Name" value="${userData.information.Name}">
                                     <input class="hidden" type="text" name="JobID" value="${jobKey}">
@@ -279,7 +293,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                     <input class="hidden" type="text" name="Ending Time" value="${jobData.EndingTime}">
                                     <input class="hidden" type="text" name="Response" value="I have declined the shift">
                                     <button onclick="declineJob('${childSnapshot.key}', '${jobKey}')" type="submit">Decline</button>
-                                    </form>
+
                                     </div>
                                 `;
     
@@ -333,7 +347,6 @@ document.addEventListener("DOMContentLoaded", function () {
                                 statusH1.innerHTML = `At ${jobData.CurrentJob} from ${jobData.StartingTime} to ${jobData.EndingTime} on ${jobData.Date}
                                     <br>
                                     <div id="buttonHolder">
-                                    <form action="https://formsubmit.co/gunkarsinghjohal@gmail.com" method="POST">
                                     <input class="hidden" type="text" name="ID" value="${userData.information.ID}">
                                     <input class="hidden" type="text" name="Name" value="${userData.information.Name}">
                                     <input class="hidden" type="text" name="JobID" value="${jobKey}">
@@ -343,8 +356,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                     <input class="hidden" type="text" name="Ending Time" value="${jobData.EndingTime}">
                                     <input class="hidden" type="text" name="Response" value="I have ended the shift">
                                     <button id="end" onclick="endJob('${childSnapshot.key}', '${jobKey}')" type="submit">End Job</button>           
-                                    </form>                         
-                                    </div>
+                                                </div>
                                     `
                                     ;
                                 mainJobDisplayed = true;
