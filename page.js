@@ -72,7 +72,13 @@ function acceptJob(userKey, jobKey) {
         .then(function () {
 
             // Notify the user that the job has been accepted
+            setTimeout(function() {
+                console.log("Timer is done!");
+              }, 2000);
             alert('Job accepted successfully.');
+            setTimeout(function() {
+                console.log("Timer is done!");
+              }, 2000);
             var url = "https://wa.me/" + "61433409278" + "?text=I have accepted the shift for " + jobKey;
             window.open(url, "_blank").focus();
             setTimeout(function() {
@@ -102,8 +108,13 @@ function declineJob(userKey, jobKey) {
     usersRef.child(responsePath).set('No')
         .then(function () {
             // Notify the user that the job has been declined
-
+            setTimeout(function() {
+                console.log("Timer is done!");
+              }, 2000);
             alert('Job declined successfully.');
+            setTimeout(function() {
+                console.log("Timer is done!");
+              }, 2000);
             var url = "https://wa.me/" + "61433409278" + "?text=I have declined the shift for " + jobKey;
             window.open(url, "_blank").focus();
             setTimeout(function() {
@@ -193,7 +204,13 @@ function endJob(userKey, jobKey) {
     // Open WhatsApp to notify about ending the shift
 
                                         // Notify the user that the job has been ended
+                                        setTimeout(function() {
+                                            console.log("Timer is done!");
+                                          }, 2000);
                                         alert('Job ended successfully.');
+                                        setTimeout(function() {
+                                            console.log("Timer is done!");
+                                          }, 2000);
                                         var url = "https://wa.me/" + "61433409278" + "?text=I have ended the shift";
                                         window.open(url, "_blank").focus();
                                         setTimeout(function() {
